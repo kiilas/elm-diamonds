@@ -56,11 +56,13 @@ rowView : Int -> Int -> List Cell.Cell -> List (Html.Html msg)
 rowView tic = List.indexedMap << cellView tic
 
 mapView : Int -> Map.Map -> Html.Html msg
-mapView tic map =
+mapView tic =
   Html.node
     "div"
     [ Html.Attributes.id "map"]
-    (List.concat (List.indexedMap (rowView tic) (Map.toList map)))
+  << List.concat
+  << List.indexedMap (rowView tic)
+  << Map.toList
 
 view : Model -> Html.Html msg
 view model = mapView model.tic model.map
