@@ -1,13 +1,8 @@
-module Cell exposing (Cell(..))
+module Cell exposing (..)
 
-type Cell
-  = Dirt
-  | Space
-  | Steel
-  | Wall
-  | Boulder
-  | Diamond
-  | Player
-  | Exit
-  | Firefly
-  | Butterfly
+import Thing exposing (..)
+
+type alias Cell =
+  { thing : Thing
+  , scanned : Bool
+  }
