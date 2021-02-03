@@ -11,8 +11,8 @@ import Map
 
 type alias Model = Game.Game
 
-init : Model
-init = Game.initGame
+init : () -> (Model, Cmd Msg)
+init = always <| (Game.initGame, Cmd.none)
 
 type alias Msg = ()
 
@@ -50,11 +50,15 @@ mapView = Html.node "div" [Html.Attributes.id "map"] << List.concat << List.inde
 view : Model -> Html.Html ()
 view = mapView << .map
 
-update : Msg -> Model -> Model
-update _ = identity
+update : Msg -> Model -> (Model, Cmd Msg)
+update _ model = (model, Cmd.none)
 
-main = Browser.sandbox
+subscriptions : Model -> Sub Msg
+subscriptions = always Sub.none
+
+main = Browser.element
     { init = init
     , view = view
     , update = update
+    , subscriptions = subscriptions
     }
