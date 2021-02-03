@@ -1,0 +1,51 @@
+#map {
+    image-rendering: crisp-edges;
+}
+
+tile {
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: 64px 64px;
+    width: 64px;
+    height: 64px;
+}
+
+tile.dirt {
+    background-image: url("gfx/dirt.png");
+}
+
+tile.space {
+    background-image: url("gfx/space.png");
+}
+
+tile.steel {
+    background-image: url("gfx/steel.png");
+}
+
+tile.wall {
+    background-image: url("gfx/wall.png");
+}
+
+tile.boulder {
+    background-image: url("gfx/boulder.png");
+}
+
+tile.diamond {
+    background-image: url("gfx/diamond1.png");
+}
+
+tile.player {
+    background-image: url("gfx/player.png");
+}
+
+tile.exit {
+    background-image: url("gfx/exit.png");
+}
+
+tile.firefly {
+    background-image: url("gfx/firefly.png");
+}
+
+tile.butterfly {
+    background-image: url("gfx/butterfly.png");
+}

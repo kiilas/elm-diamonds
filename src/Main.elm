@@ -37,7 +37,7 @@ rowView : Int -> List Cell.Cell -> List (Html.Html ())
 rowView = List.indexedMap << cellView
 
 mapView : Map.Map -> Html.Html ()
-mapView = Html.node "div" [] << List.concat << List.indexedMap rowView << Map.toList
+mapView = Html.node "div" [Html.Attributes.id "map"] << List.concat << List.indexedMap rowView << Map.toList
 
 view : Model -> Html.Html ()
 view = mapView << .map
