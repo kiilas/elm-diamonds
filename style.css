@@ -1,13 +1,16 @@
-#map {
+body {
     image-rendering: crisp-edges;
+    background: #3f3f3f;
 }
+
 
 tile {
     display: inline-block;
     background-repeat: no-repeat;
-    background-size: 64px 64px;
+    background-size: 100%;
     width: 64px;
     height: 64px;
+    position: absolute;
 }
 
 tile.dirt {
@@ -43,9 +46,9 @@ tile.exit {
 }
 
 tile.firefly {
-    background-image: url("gfx/firefly.png");
+    background-image: url("gfx/firefly1.png");
 }
 
 tile.butterfly {
-    background-image: url("gfx/butterfly.png");
+    background-image: url("gfx/butterfly1.png");
 }

@@ -30,8 +30,16 @@ cellClass cell =
         Cell.Firefly -> "firefly"
         Cell.Butterfly -> "butterfly"
 
+translationValue : Int -> Int -> String
+translationValue x y = String.fromInt (x*100) ++ "% " ++ String.fromInt (y*100) ++ "%"
+
 cellView : Int -> Int -> Cell.Cell -> Html.Html ()
-cellView y x cell = Html.node "tile" [Html.Attributes.class <| cellClass cell] []
+cellView y x cell =
+  Html.node
+    "tile"
+      [ Html.Attributes.class <| cellClass cell
+      , Html.Attributes.style "translate" <| translationValue x y]
+    []
 
 rowView : Int -> List Cell.Cell -> List (Html.Html ())
 rowView = List.indexedMap << cellView
