@@ -4,6 +4,7 @@ import Array
 import Browser
 import Html
 import Html.Attributes
+import Time
 
 import Cell
 import Game
@@ -14,7 +15,8 @@ type alias Model = Game.Game
 init : () -> (Model, Cmd Msg)
 init = always <| (Game.initGame, Cmd.none)
 
-type alias Msg = ()
+type Msg
+  = Tic
 
 cellClass : Cell.Cell -> String
 cellClass cell =
@@ -30,31 +32,46 @@ cellClass cell =
         Cell.Firefly -> "firefly"
         Cell.Butterfly -> "butterfly"
 
+numFrames : Cell.Cell -> Int
+numFrames cell =
+  case cell of
+    Cell.Diamond -> 2
+    Cell.Firefly -> 2
+    Cell.Butterfly -> 2
+    _ -> 1
+
 translationValue : Int -> Int -> String
 translationValue x y = String.fromInt (x*100) ++ "% " ++ String.fromInt (y*100) ++ "%"
 
-cellView : Int -> Int -> Cell.Cell -> Html.Html ()
-cellView y x cell =
+cellView : Int -> Int -> Int -> Cell.Cell -> Html.Html msg
+cellView tic y x cell =
   Html.node
     "tile"
       [ Html.Attributes.class <| cellClass cell
+      , Html.Attributes.class <| "frame-" ++ String.fromInt(modBy (numFrames cell) tic)
       , Html.Attributes.style "translate" <| translationValue x y]
     []
 
-rowView : Int -> List Cell.Cell -> List (Html.Html ())
-rowView = List.indexedMap << cellView
+rowView : Int -> Int -> List Cell.Cell -> List (Html.Html msg)
+rowView tic = List.indexedMap << cellView tic
 
-mapView : Map.Map -> Html.Html ()
-mapView = Html.node "div" [Html.Attributes.id "map"] << List.concat << List.indexedMap rowView << Map.toList
+mapView : Int -> Map.Map -> Html.Html msg
+mapView tic map =
+  Html.node
+    "div"
+    [ Html.Attributes.id "map"]
+    (List.concat (List.indexedMap (rowView tic) (Map.toList map)))
 
-view : Model -> Html.Html ()
-view = mapView << .map
+view : Model -> Html.Html msg
+view model = mapView model.tic model.map
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update _ model = (model, Cmd.none)
+update msg model =
+  case msg of
+    tic -> ({model | tic = model.tic + 1}, Cmd.none)
 
 subscriptions : Model -> Sub Msg
-subscriptions = always Sub.none
+subscriptions = always <| Time.every 200 <| always Tic
 
 main = Browser.element
     { init = init

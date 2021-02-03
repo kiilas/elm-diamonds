@@ -3,7 +3,13 @@ module Game exposing (Game, initGame)
 import Cell
 import Map
 
-type alias Game = {map : Map.Map}
+type alias Game =
+  { map : Map.Map
+  , tic : Int
+  }
 
 initGame : Game
-initGame = Game <| Map.exampleMap
+initGame =
+  { map = Map.exampleMap
+  , tic = 0
+  }

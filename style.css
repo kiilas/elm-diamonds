@@ -32,8 +32,12 @@ tile.boulder {
     background-image: url("gfx/boulder.png");
 }
 
-tile.diamond {
+tile.diamond.frame-0 {
     background-image: url("gfx/diamond1.png");
+}
+
+tile.diamond.frame-1 {
+    background-image: url("gfx/diamond2.png");
 }
 
 tile.player {
@@ -44,10 +48,18 @@ tile.exit {
     background-image: url("gfx/exit.png");
 }
 
-tile.firefly {
+tile.firefly.frame-0 {
     background-image: url("gfx/firefly1.png");
 }
 
-tile.butterfly {
+tile.firefly.frame-1 {
+    background-image: url("gfx/firefly2.png");
+}
+
+tile.butterfly.frame-0 {
     background-image: url("gfx/butterfly1.png");
+}
+
+tile.butterfly.frame-1 {
+    background-image: url("gfx/butterfly2.png");
 }
