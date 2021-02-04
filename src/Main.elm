@@ -2,22 +2,48 @@ module Main exposing (..)
 
 import Array
 import Browser
+import Browser.Events
 import Html
 import Html.Attributes
+import Json.Decode
 import Time
 
 import Cell
+import Dir
 import Game
+import Key
 import Map
+import PlayerMove
 import Thing
 
-type alias Model = Game.Game
+type alias Model =
+  { game : Game.Game
+  , keyState : KeyState
+  }
+
+type alias KeyState =
+  { up : Bool
+  , right : Bool
+  , down : Bool
+  , left : Bool
+  }
+
+setKeyState : Bool -> Key.Key -> KeyState -> KeyState
+setKeyState pressed key keyState =
+  case key of
+    Key.Up -> {keyState | up = pressed}
+    Key.Right -> {keyState | right = pressed}
+    Key.Down -> {keyState | down = pressed}
+    Key.Left -> {keyState | left = pressed}
 
 init : () -> (Model, Cmd Msg)
-init = always <| (Game.init, Cmd.none)
+init = always <| ({game = Game.init, keyState = KeyState False False False False}, Cmd.none)
 
 type Msg
   = Tic
+  | KeyDown Key.Key
+  | KeyUp Key.Key
+  | NoOp
 
 thingClass : Thing.Thing -> String
 thingClass thing =
@@ -66,15 +92,49 @@ mapView tic =
   << Map.toList
 
 view : Model -> Html.Html msg
-view model = mapView model.tic model.map
+view model = mapView model.game.tic model.game.map
+
+playerMove : KeyState -> PlayerMove.Move
+playerMove keyState =
+  if keyState.right
+    then PlayerMove.Walk Dir.Right
+  else if keyState.left
+    then PlayerMove.Walk Dir.Left
+  else if keyState.up
+    then PlayerMove.Walk Dir.Up
+  else if keyState.down
+    then PlayerMove.Walk Dir.Down
+  else
+    PlayerMove.Stand
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    tic -> (Game.update model, Cmd.none)
+    Tic -> ({model | game = Game.update (playerMove model.keyState) model.game}, Cmd.none)
+    KeyDown key -> ({model | keyState = setKeyState True key model.keyState}, Cmd.none)
+    KeyUp key -> ({model | keyState = setKeyState False key model.keyState}, Cmd.none)
+    NoOp -> (model, Cmd.none)
+
+decodeKey : String -> Maybe Key.Key
+decodeKey string =
+  case string of
+    "ArrowUp" -> Just Key.Up
+    "ArrowRight" -> Just Key.Right
+    "ArrowDown" -> Just Key.Down
+    "ArrowLeft" -> Just Key.Left
+    _ -> Nothing
 
 subscriptions : Model -> Sub Msg
-subscriptions = always <| Time.every 200 <| always Tic
+subscriptions =
+  always <|
+    Sub.batch
+    [ Time.every 200 <| always Tic
+      , Browser.Events.onKeyDown
+        <| Json.Decode.map (Maybe.withDefault NoOp << Maybe.map KeyDown << decodeKey)
+        <| Json.Decode.field "key" Json.Decode.string
+      , Browser.Events.onKeyUp
+        <| Json.Decode.map (Maybe.withDefault NoOp << Maybe.map KeyUp << decodeKey)
+        <| Json.Decode.field "key" Json.Decode.string]
 
 main = Browser.element
     { init = init

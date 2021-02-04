@@ -20,8 +20,9 @@ init =
   , tic = 0
   }
 
-update : Game -> Game
-update game = updateMap PlayerMove.Stand {game | tic = game.tic + 1}
+update : PlayerMove.Move -> Game -> Game
+update playerMove game =
+  updateMap playerMove {game | tic = game.tic + 1}
 
 updateMap : PlayerMove.Move -> Game -> Game
 updateMap playerMove game =
@@ -53,10 +54,10 @@ updateCell playerMove pos game =
         ahead = Dir.add (Thing.dir thing) pos
         rotAhead = Dir.add (Dir.rotate rot (Thing.dir thing)) pos
       in
-      if not (Thing.solid (Map.at ahead game.map))
-        then move pos ahead game
-      else if not (Thing.solid (Map.at rotAhead game.map))
+      if not (Thing.solid (Map.at rotAhead game.map))
         then move pos rotAhead <| rotate rot pos game
+      else if not (Thing.solid (Map.at ahead game.map))
+        then move pos ahead game
       else
         rotate (Rotation.inverse rot) pos game
 
