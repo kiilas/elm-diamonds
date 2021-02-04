@@ -60,6 +60,14 @@ updateCell playerMove pos game =
         then move pos ahead game
       else
         rotate (Rotation.inverse rot) pos game
+    Thing.Gravity ->
+      let
+        under = Dir.add Dir.Down pos
+      in
+        if not (Thing.solid (Map.at under game.map))
+          then move pos under <| change (Thing.setFalling True) pos game
+        else
+          change (Thing.setFalling False) pos game
 
 rotate : Rotation.Rotation -> (Int, Int) -> Game -> Game
 rotate rot pos game =
@@ -74,3 +82,10 @@ move from to game =
     thing = Map.at from game.map
   in
   {game | map = Map.set Thing.Space from game.map |> Map.set thing to}
+
+change : (Thing.Thing -> Thing.Thing) -> (Int, Int) -> Game -> Game
+change f pos game =
+  let
+    thing = Map.at pos game.map
+  in
+  {game | map = Map.set (f thing) pos game.map}

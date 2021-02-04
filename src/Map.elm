@@ -21,11 +21,11 @@ exampleMap : List (List Thing)
 exampleMap =
   [ [Steel,   Steel,   Steel,   Steel,        Steel, Steel,          Steel, Steel]
   , [ Exit,   Space,   Space,  Player,         Dirt,  Wall,          Space, Steel]
-  , [Steel, Boulder, Boulder,    Dirt,         Dirt,  Wall, Butterfly Left, Steel]
-  , [Steel, Diamond,    Dirt,    Dirt,         Dirt,  Wall,           Dirt, Steel]
-  , [Steel,    Dirt,    Dirt, Boulder,      Diamond,  Dirt,           Dirt, Steel]
+  , [Steel, Boulder False, Boulder False,    Dirt,         Dirt,  Wall, Butterfly Left, Steel]
+  , [Steel, Diamond False,    Dirt,    Dirt,         Dirt,  Wall,           Dirt, Steel]
+  , [Steel,    Dirt,    Dirt, Boulder False,      Diamond False,  Dirt,           Dirt, Steel]
   , [Steel,    Dirt,    Dirt,    Dirt,         Dirt,  Dirt,           Dirt, Steel]
-  , [Steel,    Dirt,    Dirt,    Dirt, Firefly Left, Space,        Diamond, Steel]
+  , [Steel,    Dirt,    Dirt,    Dirt, Firefly Left, Space,        Diamond False, Steel]
   , [Steel,   Steel,   Steel,   Steel,        Steel, Steel,          Steel, Steel]]
 
 toList : Map -> List (List Cell)

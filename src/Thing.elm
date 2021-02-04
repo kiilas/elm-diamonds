@@ -1,4 +1,4 @@
-module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable)
+module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling)
 
 import Dir exposing (..)
 import Rotation exposing (..)
@@ -8,8 +8,8 @@ type Thing
   | Space
   | Steel
   | Wall
-  | Boulder
-  | Diamond
+  | Boulder Bool
+  | Diamond Bool
   | Player
   | Exit
   | Firefly Dir
@@ -18,6 +18,7 @@ type Thing
 type MoveType
   = NoMove
   | PlayerMove
+  | Gravity
   | Handed Rotation
 
 dir : Thing -> Dir
@@ -44,6 +45,8 @@ moveType : Thing -> MoveType
 moveType cell =
   case cell of
     Player -> PlayerMove
+    Boulder _ -> Gravity
+    Diamond _ -> Gravity
     Firefly _ -> Handed CCW
     Butterfly _ -> Handed CW
     _ -> NoMove
@@ -53,5 +56,14 @@ passable thing =
   case thing of
     Dirt -> True
     Space -> True
-    Diamond -> True
+    Diamond False -> True
     _ -> False
+
+setFalling: Bool -> Thing -> Thing
+setFalling falling thing =
+  case (falling, thing) of
+    (True, Boulder False) -> Boulder True
+    (True, Diamond False) -> Diamond True
+    (False, Boulder True) -> Boulder False
+    (False, Diamond True) -> Diamond False
+    _ -> thing

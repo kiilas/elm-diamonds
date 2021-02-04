@@ -52,8 +52,8 @@ thingClass thing =
         Thing.Space -> "space"
         Thing.Steel -> "steel"
         Thing.Wall -> "wall"
-        Thing.Boulder -> "boulder"
-        Thing.Diamond -> "diamond"
+        Thing.Boulder _ -> "boulder"
+        Thing.Diamond _ -> "diamond"
         Thing.Player -> "player"
         Thing.Exit -> "exit"
         Thing.Firefly _ -> "firefly"
@@ -62,7 +62,7 @@ thingClass thing =
 numFrames : Thing.Thing -> Int
 numFrames thing =
   case thing of
-    Thing.Diamond -> 2
+    Thing.Diamond _ -> 2
     Thing.Firefly _ -> 2
     Thing.Butterfly _ -> 2
     _ -> 1
