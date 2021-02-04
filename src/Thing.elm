@@ -1,4 +1,4 @@
-module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling)
+module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling, round)
 
 import Dir exposing (..)
 import Rotation exposing (..)
@@ -59,7 +59,7 @@ passable thing =
     Diamond False -> True
     _ -> False
 
-setFalling: Bool -> Thing -> Thing
+setFalling : Bool -> Thing -> Thing
 setFalling falling thing =
   case (falling, thing) of
     (True, Boulder False) -> Boulder True
@@ -67,3 +67,11 @@ setFalling falling thing =
     (False, Boulder True) -> Boulder False
     (False, Diamond True) -> Diamond False
     _ -> thing
+
+round : Thing -> Bool
+round thing =
+  case thing of
+    Wall -> True
+    Boulder _ -> True
+    Diamond _ -> True
+    _ -> False
