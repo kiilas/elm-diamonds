@@ -1,6 +1,7 @@
-module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling, round)
+module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling, round, explosionType, crushable, isFalling, explosionKernel, destructible)
 
 import Dir exposing (..)
+import Explosion
 import Rotation exposing (..)
 
 type Thing
@@ -14,12 +15,14 @@ type Thing
   | Exit
   | Firefly Dir
   | Butterfly Dir
+  | Explosion Explosion.Explosion Explosion.Stage
 
 type MoveType
   = NoMove
   | PlayerMove
   | Gravity
   | Handed Rotation
+  | Morph Thing
 
 dir : Thing -> Dir
 dir thing =
@@ -49,6 +52,11 @@ moveType cell =
     Diamond _ -> Gravity
     Firefly _ -> Handed CCW
     Butterfly _ -> Handed CW
+    Explosion e Explosion.Stage1 -> Morph (Explosion e Explosion.Stage2)
+    Explosion e Explosion.Stage2 -> Morph (Explosion e Explosion.Stage3)
+    Explosion e Explosion.Stage3 -> Morph (Explosion e Explosion.Stage4)
+    Explosion Explosion.Space Explosion.Stage4 -> Morph Space
+    Explosion Explosion.Diamond Explosion.Stage4 -> Morph (Diamond False)
     _ -> NoMove
 
 passable : Thing -> Bool
@@ -75,3 +83,33 @@ round thing =
     Boulder _ -> True
     Diamond _ -> True
     _ -> False
+
+explosionType : Thing -> Explosion.Explosion
+explosionType thing =
+  case thing of
+    Butterfly _ -> Explosion.Diamond
+    _ -> Explosion.Space
+
+crushable : Thing -> Bool
+crushable thing =
+  case thing of
+    Player -> True
+    Firefly _ -> True
+    Butterfly _ -> True
+    _ -> False
+
+isFalling : Thing -> Bool
+isFalling thing =
+  case thing of
+    Boulder True -> True
+    Diamond True -> True
+    _ -> False
+
+explosionKernel : Explosion.Explosion -> Thing
+explosionKernel explosion = Explosion explosion Explosion.Stage1
+
+destructible : Thing -> Bool
+destructible thing =
+  case thing of
+    Steel -> False
+    _ -> True

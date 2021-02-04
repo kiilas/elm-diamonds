@@ -10,6 +10,7 @@ import Time
 
 import Cell
 import Dir
+import Explosion
 import Game
 import Key
 import Map
@@ -58,6 +59,14 @@ thingClass thing =
         Thing.Exit -> "exit"
         Thing.Firefly _ -> "firefly"
         Thing.Butterfly _ -> "butterfly"
+        Thing.Explosion Explosion.Space Explosion.Stage1 -> "explosion-space-1"
+        Thing.Explosion Explosion.Space Explosion.Stage2 -> "explosion-space-2"
+        Thing.Explosion Explosion.Space Explosion.Stage3 -> "explosion-space-3"
+        Thing.Explosion Explosion.Space Explosion.Stage4 -> "explosion-space-4"
+        Thing.Explosion Explosion.Diamond Explosion.Stage1 -> "explosion-diamond-1"
+        Thing.Explosion Explosion.Diamond Explosion.Stage2 -> "explosion-diamond-2"
+        Thing.Explosion Explosion.Diamond Explosion.Stage3 -> "explosion-diamond-3"
+        Thing.Explosion Explosion.Diamond Explosion.Stage4 -> "explosion-diamond-4"
 
 numFrames : Thing.Thing -> Int
 numFrames thing =

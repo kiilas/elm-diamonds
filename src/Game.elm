@@ -2,6 +2,7 @@ module Game exposing (Game, init, update)
 
 import Cell
 import Dir
+import Explosion
 import Map
 import PlayerMove
 import Rotation
@@ -72,6 +73,9 @@ updateCell playerMove pos game =
         if not (Thing.solid under)
           then move Dir.Down pos <| change (Thing.setFalling True) pos game
         else
+          if Thing.isFalling thing && Thing.crushable under
+            then explode (Thing.explosionType under) (Dir.add Dir.Down pos) game
+        else
           if Thing.round under
           && not (Thing.solid left)
           && not (Thing.solid leftUnder)
@@ -83,6 +87,7 @@ updateCell playerMove pos game =
             then move Dir.Right pos <| change (Thing.setFalling True) pos game
         else
           change (Thing.setFalling False) pos game
+    Thing.Morph t -> change (always t) pos game
 
 rotate : Rotation.Rotation -> (Int, Int) -> Game -> Game
 rotate rot pos game =
@@ -105,3 +110,18 @@ change f pos game =
     thing = Map.at pos game.map
   in
   {game | map = Map.set (f thing) pos game.map}
+
+explode : Explosion.Explosion -> (Int, Int) -> Game -> Game
+explode explosion (x, y) game =
+  let
+    explosionCoords =
+      [ (x-1, y-1), (x, y-1), (x+1, y-1)
+      , (x-1, y), (x, y), (x+1, y)
+      , (x-1, y+1), (x, y+1), (x+1, y+1) ]
+    explosionChange thing =
+      if Thing.destructible thing
+        then Thing.explosionKernel explosion
+      else
+        thing
+  in
+  List.foldl (change explosionChange) game explosionCoords

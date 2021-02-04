@@ -25,7 +25,7 @@ exampleMap =
   , [Steel, Diamond False,    Dirt,    Dirt,         Dirt,  Wall,           Dirt, Steel]
   , [Steel,    Dirt,    Dirt, Boulder False,      Diamond False,  Dirt,           Dirt, Steel]
   , [Steel,    Dirt,    Dirt,    Dirt,         Dirt,  Dirt,           Dirt, Steel]
-  , [Steel,    Dirt,    Dirt,    Dirt, Firefly Left, Space,        Diamond False, Steel]
+  , [Steel,    Dirt,    Dirt,    Dirt, Firefly Down, Space,        Diamond False, Steel]
   , [Steel,   Steel,   Steel,   Steel,        Steel, Steel,          Steel, Steel]]
 
 toList : Map -> List (List Cell)

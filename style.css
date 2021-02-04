@@ -63,3 +63,35 @@ tile.butterfly.frame-0 {
 tile.butterfly.frame-1 {
     background-image: url("gfx/butterfly2.png");
 }
+
+tile.explosion-space-1 {
+    background-image: url("gfx/explosionspace1.png");
+}
+
+tile.explosion-space-2 {
+    background-image: url("gfx/explosionspace2.png");
+}
+
+tile.explosion-space-3 {
+    background-image: url("gfx/explosionspace3.png");
+}
+
+tile.explosion-space-4 {
+    background-image: url("gfx/explosionspace4.png");
+}
+
+tile.explosion-diamond-1 {
+    background-image: url("gfx/explosiondiamond1.png");
+}
+
+tile.explosion-diamond-2 {
+    background-image: url("gfx/explosiondiamond2.png");
+}
+
+tile.explosion-diamond-3 {
+    background-image: url("gfx/explosiondiamond3.png");
+}
+
+tile.explosion-diamond-4 {
+    background-image: url("gfx/explosiondiamond4.png");
+}
