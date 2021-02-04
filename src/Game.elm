@@ -1,10 +1,11 @@
 module Game exposing (Game, init, update)
 
-import Cell exposing (..)
+import Cell
 import Dir
 import Map
-import Rotation exposing (..)
-import Thing exposing (..)
+import PlayerMove
+import Rotation
+import Thing
 
 import Array
 
@@ -20,38 +21,46 @@ init =
   }
 
 update : Game -> Game
-update game = updateMap {game | tic = game.tic + 1}
+update game = updateMap PlayerMove.Stand {game | tic = game.tic + 1}
 
-updateMap : Game -> Game
-updateMap game =
+updateMap : PlayerMove.Move -> Game -> Game
+updateMap playerMove game =
   let
     unscanned = {game | map = Map.unscan game.map}
   in
-  List.foldl updateCell unscanned <| Map.coords game.map
+  List.foldl (updateCell playerMove) unscanned <| Map.coords game.map
 
-updateCell : (Int, Int) -> Game -> Game
-updateCell pos game =
+updateCell : PlayerMove.Move -> (Int, Int) -> Game -> Game
+updateCell playerMove pos game =
   let
     cell = Map.cellAt pos game.map
     thing = cell.thing
   in
   if cell.scanned
     then game
-  else case moveType thing of
-    NoMove -> game
-    Handed rot ->
+  else case Thing.moveType thing of
+    Thing.NoMove -> game
+    Thing.PlayerMove ->
       let
-        ahead = Dir.add (dir thing) pos
-        rotAhead = Dir.add (Dir.rotate rot (dir thing)) pos
+        ahead = Dir.add (PlayerMove.dir playerMove) pos
       in
-      if not (solid (Map.at ahead game.map))
+      if Thing.passable (Map.at ahead game.map)
         then move pos ahead game
-      else if not (solid (Map.at rotAhead game.map))
+      else
+        game
+    Thing.Handed rot ->
+      let
+        ahead = Dir.add (Thing.dir thing) pos
+        rotAhead = Dir.add (Dir.rotate rot (Thing.dir thing)) pos
+      in
+      if not (Thing.solid (Map.at ahead game.map))
+        then move pos ahead game
+      else if not (Thing.solid (Map.at rotAhead game.map))
         then move pos rotAhead <| rotate rot pos game
       else
-        rotate (inverse rot) pos game
+        rotate (Rotation.inverse rot) pos game
 
-rotate : Rotation -> (Int, Int) -> Game -> Game
+rotate : Rotation.Rotation -> (Int, Int) -> Game -> Game
 rotate rot pos game =
   let
     thing = Map.at pos game.map
@@ -63,4 +72,4 @@ move from to game =
   let
     thing = Map.at from game.map
   in
-  {game | map = Map.set Space from game.map |> Map.set thing to}
+  {game | map = Map.set Thing.Space from game.map |> Map.set thing to}

@@ -7,7 +7,7 @@ type Dir
   | Right
   | Down
   | Left
-  | NoDir
+  | None
 
 add : Dir -> (Int, Int) -> (Int, Int)
 add dir (x, y) =
@@ -16,7 +16,7 @@ add dir (x, y) =
     Right -> (x + 1, y)
     Down -> (x, y + 1)
     Left -> (x - 1, y)
-    NoDir -> (x, y)
+    None -> (x, y)
 
 rotate : Rotation -> Dir -> Dir
 rotate rot dir =
@@ -27,11 +27,11 @@ rotate rot dir =
         Right -> Down
         Down -> Left
         Left -> Up
-        NoDir -> NoDir
+        None -> None
     CCW ->
       case dir of
         Up -> Left
         Right -> Up
         Down -> Right
         Left -> Down
-        NoDir -> NoDir
+        None -> None
