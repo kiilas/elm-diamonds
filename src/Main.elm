@@ -89,7 +89,7 @@ cellView tic y x cell =
   Html.node
     "tile"
       [ Html.Attributes.class <| thingClass cell.thing
-      , Html.Attributes.class <| "frame-" ++ String.fromInt(modBy (numFrames cell.thing) tic)
+      , Html.Attributes.class <| "frame-" ++ String.fromInt(1 + modBy (numFrames cell.thing) tic)
       , Html.Attributes.style "translate" <| translationValue x y]
     []
 

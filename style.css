@@ -32,11 +32,11 @@ tile.boulder {
     background-image: url("gfx/boulder.png");
 }
 
-tile.diamond.frame-0 {
+tile.diamond.frame-1 {
     background-image: url("gfx/diamond1.png");
 }
 
-tile.diamond.frame-1 {
+tile.diamond.frame-2 {
     background-image: url("gfx/diamond2.png");
 }
 
@@ -48,27 +48,27 @@ tile.player {
     background-image: url("gfx/exitclosed.png");
 }
 
-.exit-open tile.exit.frame-0 {
+.exit-open tile.exit.frame-1 {
     background-image: url("gfx/exitopen1.png");
 }
 
-.exit-open tile.exit.frame-1 {
+.exit-open tile.exit.frame-2 {
     background-image: url("gfx/exitopen2.png");
 }
 
-tile.firefly.frame-0 {
+tile.firefly.frame-1 {
     background-image: url("gfx/firefly1.png");
 }
 
-tile.firefly.frame-1 {
+tile.firefly.frame-2 {
     background-image: url("gfx/firefly2.png");
 }
 
-tile.butterfly.frame-0 {
+tile.butterfly.frame-1 {
     background-image: url("gfx/butterfly1.png");
 }
 
-tile.butterfly.frame-1 {
+tile.butterfly.frame-2 {
     background-image: url("gfx/butterfly2.png");
 }
 
