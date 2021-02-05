@@ -113,8 +113,13 @@ numFrames thing =
     Thing.Exit -> 2
     _ -> 1
 
-translationValue : Int -> Int -> String
-translationValue x y = String.fromInt (x*100) ++ "% " ++ String.fromInt (y*100) ++ "%"
+translation : Int -> Int -> String
+translation x y =
+  "translate("
+  ++ String.fromInt (x*100)
+  ++ "%, "
+  ++ String.fromInt (y*100)
+  ++ "%)"
 
 cellView : Int -> Int -> Int -> Cell.Cell -> Html.Html msg
 cellView tic y x cell =
@@ -122,7 +127,7 @@ cellView tic y x cell =
     "tile"
       [ Html.Attributes.class <| thingClass cell.thing
       , Html.Attributes.class <| "frame-" ++ String.fromInt(1 + modBy (numFrames cell.thing) tic)
-      , Html.Attributes.style "translate" <| translationValue x y]
+      , Html.Attributes.style "transform" <| translation x y]
     []
 
 rowView : Int -> Int -> List Cell.Cell -> List (Html.Html msg)

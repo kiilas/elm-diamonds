@@ -8,6 +8,7 @@
 
 body {
     image-rendering: crisp-edges;
+    image-rendering: pixelated;
     background: #3f3f3f;
 }
 
