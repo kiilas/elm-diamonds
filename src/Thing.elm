@@ -1,4 +1,4 @@
-module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling, round, explosionType, crushable, isFalling, explosionKernel, destructible)
+module Thing exposing (Thing(..), MoveType(..), dir, rotate, solid, moveType, passable, setFalling, round, explosionType, crushable, isFalling, explosionKernel, destructible, isMonster, isFriendly)
 
 import Dir exposing (..)
 import Explosion
@@ -113,3 +113,16 @@ destructible thing =
   case thing of
     Steel -> False
     _ -> True
+
+isMonster : Thing -> Bool
+isMonster thing =
+  case thing of
+    Firefly _ -> True
+    Butterfly _ -> True
+    _ -> False
+
+isFriendly : Thing -> Bool
+isFriendly thing =
+  case thing of
+    Player -> True
+    _ -> False

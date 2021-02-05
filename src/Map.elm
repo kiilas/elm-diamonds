@@ -1,4 +1,4 @@
-module Map exposing (Map, exampleMap, toList, coords, at, cellAt, set, fromList, unscan)
+module Map exposing (Map, exampleMap, toList, coords, at, cellAt, set, fromList, unscan, adjacentTo)
 
 import Array
 import Cell exposing (..)
@@ -9,6 +9,8 @@ import Thing exposing (..)
 type alias Array2D a = Array.Array (Array.Array a)
 
 type alias Map = Array2D Cell.Cell
+
+type alias Pos = (Int, Int)
 
 fromList : List (List Thing) -> Map
 fromList =
@@ -31,22 +33,22 @@ exampleMap =
 toList : Map -> List (List Cell)
 toList = Array.toList << Array.map Array.toList
 
-coords : Map -> List (Int, Int)
+coords : Map -> List Pos
 coords = List.concatMap rowCoords << Array.toIndexedList
 
-rowCoords : (Int, Array.Array Cell.Cell) -> List (Int, Int)
+rowCoords : (Int, Array.Array Cell.Cell) -> List Pos
 rowCoords (y, row) = List.map (\x -> (x, y)) <| List.range 0 <| (Array.length row - 1)
 
-at : (Int, Int) -> Map -> Thing
-at pos map = .thing <| cellAt pos map
+at : Map -> Pos -> Thing
+at map pos = .thing <| cellAt pos map
 
-cellAt : (Int, Int) -> Map -> Cell.Cell
+cellAt : Pos -> Map -> Cell.Cell
 cellAt (x, y) map =
   Array.get y map
   |> andThen (Array.get x)
   |> withDefault {thing = Steel, scanned = True}
 
-set : Thing -> (Int, Int) -> Map -> Map
+set : Thing -> Pos -> Map -> Map
 set thing (x, y) map =
   Array.get y map
   |> Maybe.map (Array.set x {thing = thing, scanned = True})
@@ -55,3 +57,12 @@ set thing (x, y) map =
 
 unscan : Map -> Map
 unscan = Array.map <| Array.map <| (\cell -> {cell | scanned = False})
+
+adjacent : Pos -> List Pos
+adjacent (x, y) = [(x, y-1), (x-1, y), (x+1, y), (x, y+1)]
+
+adjacentThings : Map -> Pos -> List Thing
+adjacentThings map pos = List.map (at map) <| adjacent pos
+
+adjacentTo : (Thing -> Bool) -> Map -> Pos -> Bool
+adjacentTo f map pos = List.any f <| adjacentThings map pos
