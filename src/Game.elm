@@ -74,7 +74,10 @@ updateCell playerMove pos game =
             then
               if Just playerDir == game.pushAttempt then
                 move playerDir aheadPos
-                >> move playerDir pos
+                >>
+                  case playerMove of
+                    PlayerMove.Walk d -> move d pos
+                    _ -> identity
               else
                 always {game | pushAttempt = Just playerDir}
         else if Thing.isExit ahead && game.collected >= game.toCollect then
