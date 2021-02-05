@@ -15,6 +15,7 @@ type alias Game =
   , tic : Int
   , collected : Int
   , toCollect : Int
+  , pushAttempt : Maybe Dir.Dir
   }
 
 init : Game
@@ -23,6 +24,7 @@ init =
   , tic = 0
   , collected = 0
   , toCollect = 9
+  , pushAttempt = Nothing
   }
 
 update : PlayerMove.Move -> Game -> Game
@@ -50,19 +52,35 @@ updateCell playerMove pos game =
     Thing.NoMove -> game
     Thing.PlayerMove ->
       let
-        aheadPos = Dir.add (PlayerMove.dir playerMove) pos
+        pushAttempt = game.pushAttempt
+        playerDir = PlayerMove.dir playerMove
+        aheadPos = Dir.add playerDir pos
         ahead = Map.at game.map aheadPos
       in
-      if Thing.passable ahead then
-        collect ahead game
-        |>
-          case playerMove of
-            PlayerMove.Stand -> identity
-            PlayerMove.Walk d -> move d pos
-            PlayerMove.Grab d -> change (always Thing.Space) aheadPos
-      else if Thing.isExit ahead && game.collected >= game.toCollect then
-        init
-      else game
+      game
+      |> always {game | pushAttempt = Nothing}
+      |>
+        if Thing.passable ahead then
+          collect ahead
+          >>
+            case playerMove of
+              PlayerMove.Stand -> identity
+              PlayerMove.Walk d -> move d pos
+              PlayerMove.Grab d -> change (always Thing.Space) aheadPos
+        else
+          if Dir.isHorizontal playerDir
+          && Thing.isPushable ahead
+          && not (Thing.solid <| Map.at game.map (Dir.add playerDir aheadPos))
+            then
+              if Just playerDir == game.pushAttempt then
+                move playerDir aheadPos
+                >> move playerDir pos
+              else
+                always {game | pushAttempt = Just playerDir}
+        else if Thing.isExit ahead && game.collected >= game.toCollect then
+          always init
+        else
+          identity
     Thing.Handed rot ->
       let
         ahead = Map.at game.map (Dir.add (Thing.dir thing) pos)

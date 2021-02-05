@@ -1,4 +1,4 @@
-module Dir exposing (Dir(..), add, rotate)
+module Dir exposing (Dir(..), add, rotate, isHorizontal)
 
 import Rotation exposing (..)
 
@@ -35,3 +35,10 @@ rotate rot dir =
         Down -> Right
         Left -> Down
         None -> None
+
+isHorizontal : Dir -> Bool
+isHorizontal dir =
+  case dir of
+    Left -> True
+    Right -> True
+    _ -> False
