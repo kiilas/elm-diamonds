@@ -78,6 +78,7 @@ numFrames thing =
     Thing.Diamond _ -> 2
     Thing.Firefly _ -> 2
     Thing.Butterfly _ -> 2
+    Thing.Exit -> 2
     _ -> 1
 
 translationValue : Int -> Int -> String
@@ -95,17 +96,22 @@ cellView tic y x cell =
 rowView : Int -> Int -> List Cell.Cell -> List (Html.Html msg)
 rowView tic = List.indexedMap << cellView tic
 
-mapView : Int -> Map.Map -> Html.Html msg
-mapView tic =
+gameView : Game.Game -> Html.Html msg
+gameView game =
   Html.node
     "div"
-    [ Html.Attributes.id "map"]
-  << List.concat
-  << List.indexedMap (rowView tic)
-  << Map.toList
+    [ Html.Attributes.id "map"
+    , Html.Attributes.class
+      <| if game.collected >= game.toCollect then
+           "exit-open"
+         else
+           "exit-closed"]
+  <| List.concat
+  <| List.indexedMap (rowView game.tic)
+  <| Map.toList game.map
 
 view : Model -> Html.Html msg
-view model = mapView model.game.tic model.game.map
+view = gameView << .game
 
 playerMove : KeyState -> PlayerMove.Move
 playerMove keyState =

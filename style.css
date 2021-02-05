@@ -44,8 +44,16 @@ tile.player {
     background-image: url("gfx/player.png");
 }
 
-tile.exit {
-    background-image: url("gfx/exit.png");
+.exit-closed tile.exit {
+    background-image: url("gfx/exitclosed.png");
+}
+
+.exit-open tile.exit.frame-0 {
+    background-image: url("gfx/exitopen1.png");
+}
+
+.exit-open tile.exit.frame-1 {
+    background-image: url("gfx/exitopen2.png");
 }
 
 tile.firefly.frame-0 {
