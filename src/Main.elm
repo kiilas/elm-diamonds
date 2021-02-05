@@ -29,6 +29,9 @@ type alias KeyState =
   , left : Bool
   }
 
+initKeyState : KeyState
+initKeyState = KeyState False False False False
+
 setKeyState : Bool -> Key.Key -> KeyState -> KeyState
 setKeyState pressed key keyState =
   case key of
@@ -38,12 +41,13 @@ setKeyState pressed key keyState =
     Key.Left -> {keyState | left = pressed}
 
 init : () -> (Model, Cmd Msg)
-init = always <| ({game = Game.init, keyState = KeyState False False False False}, Cmd.none)
+init = always <| ({game = Game.init, keyState = initKeyState}, Cmd.none)
 
 type Msg
   = Tic
   | KeyDown Key.Key
   | KeyUp Key.Key
+  | VisibilityChange Browser.Events.Visibility
   | NoOp
 
 thingClass : Thing.Thing -> String
@@ -123,6 +127,7 @@ update msg model =
     KeyDown key -> ({model | keyState = setKeyState True key model.keyState}, Cmd.none)
     KeyUp key -> ({model | keyState = setKeyState False key model.keyState}, Cmd.none)
     NoOp -> (model, Cmd.none)
+    VisibilityChange _ -> ({model | keyState = initKeyState}, Cmd.none)
 
 decodeKey : String -> Maybe Key.Key
 decodeKey string =
@@ -143,7 +148,9 @@ subscriptions =
         <| Json.Decode.field "key" Json.Decode.string
       , Browser.Events.onKeyUp
         <| Json.Decode.map (Maybe.withDefault NoOp << Maybe.map KeyUp << decodeKey)
-        <| Json.Decode.field "key" Json.Decode.string]
+        <| Json.Decode.field "key" Json.Decode.string
+      , Browser.Events.onVisibilityChange VisibilityChange ]
+
 
 main = Browser.element
     { init = init
