@@ -3,6 +3,7 @@ module Game exposing (Game, init, update)
 import Cell
 import Dir
 import Explosion
+import Level
 import Map
 import PlayerMove
 import Rotation
@@ -18,14 +19,30 @@ type alias Game =
   , pushAttempt : Maybe Dir.Dir
   }
 
-init : Game
-init =
-  { map = Map.fromList Map.exampleMap
+encodedLevel =
+  """
+  IIAJA_
+  CCCCCCCC
+  JBBIADBC
+  CEEAADRC
+  CGAAADAC
+  CAAEGAAC
+  CAAAAAAC
+  CAAAMBGC
+  CCCCCCCC
+  """
+
+fromLevel : Level.Level -> Game
+fromLevel level =
+  { map = level.map
   , tic = 0
   , collected = 0
-  , toCollect = 9
+  , toCollect = level.toCollect
   , pushAttempt = Nothing
   }
+
+init : Game
+init = fromLevel <| Level.decode encodedLevel
 
 update : PlayerMove.Move -> Game -> Game
 update playerMove game =

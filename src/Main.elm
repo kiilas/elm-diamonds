@@ -6,6 +6,7 @@ import Browser.Events
 import Html
 import Html.Attributes
 import Json.Decode
+import Level
 import Time
 
 import Cell
