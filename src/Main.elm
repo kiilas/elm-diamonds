@@ -23,6 +23,7 @@ import Thing
 type alias Model =
   { game : Game.Game
   , keyState : KeyState
+  , level : Level.Level
   }
 
 type alias KeyState =
@@ -45,14 +46,32 @@ setKeyState pressed key keyState =
     Key.Left -> {keyState | left = pressed}
     Key.Fire -> {keyState | fire = pressed}
 
+defaultLevel =
+  """
+  IIAJA_
+  CCCCCCCC
+  JBBIADBC
+  CEEAADRC
+  CGAAADAC
+  CAAEGAAC
+  CAAAAAAC
+  CAAAMBGC
+  CCCCCCCC
+  """
+
 init : () -> Url.Url -> Browser.Navigation.Key -> (Model, Cmd Msg)
 init _ url _ =
+  let
+    levelString =
+      case url.query of
+        Nothing -> defaultLevel
+        Just l -> l
+    level = Level.decode levelString
+  in
   (
-    { game =
-        case url.query of
-          Nothing -> Game.init
-          Just level -> Game.fromLevel <| Level.decode level,
-      keyState = initKeyState }
+    { game = Game.fromLevel level
+    , keyState = initKeyState
+    , level = level }
   , Cmd.none )
 
 type Msg
@@ -151,7 +170,17 @@ playerMove keyState =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Tic -> ({model | game = Game.update (playerMove model.keyState) model.game}, Cmd.none)
+    Tic ->
+      ( { model | game =
+            model.game
+            |> Game.update (playerMove model.keyState)
+            |> \game ->
+                 if game.finished then
+                   Game.fromLevel model.level
+                 else
+                   game
+        }
+        , Cmd.none)
     KeyDown key -> ({model | keyState = setKeyState True key model.keyState}, Cmd.none)
     KeyUp key -> ({model | keyState = setKeyState False key model.keyState}, Cmd.none)
     NoOp -> (model, Cmd.none)

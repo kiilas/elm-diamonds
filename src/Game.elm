@@ -1,4 +1,4 @@
-module Game exposing (Game, init, update, fromLevel)
+module Game exposing (Game, update, fromLevel)
 
 import Cell
 import Dir
@@ -17,20 +17,8 @@ type alias Game =
   , collected : Int
   , toCollect : Int
   , pushAttempt : Maybe Dir.Dir
+  , finished : Bool
   }
-
-encodedLevel =
-  """
-  IIAJA_
-  CCCCCCCC
-  JBBIADBC
-  CEEAADRC
-  CGAAADAC
-  CAAEGAAC
-  CAAAAAAC
-  CAAAMBGC
-  CCCCCCCC
-  """
 
 fromLevel : Level.Level -> Game
 fromLevel level =
@@ -39,10 +27,8 @@ fromLevel level =
   , collected = 0
   , toCollect = level.toCollect
   , pushAttempt = Nothing
+  , finished = False
   }
-
-init : Game
-init = fromLevel <| Level.decode encodedLevel
 
 update : PlayerMove.Move -> Game -> Game
 update playerMove game =
@@ -61,8 +47,10 @@ updateCell playerMove pos game =
     cell = Map.cellAt pos game.map
     thing = cell.thing
   in
-  if cell.scanned
-    then game
+  if game.finished then
+    game
+  else if cell.scanned then
+    game
   else if Thing.isMonster thing && Map.adjacentTo Thing.isFriendly game.map pos
     then explode (Thing.explosionType thing) pos game
   else case Thing.moveType thing of
@@ -98,7 +86,7 @@ updateCell playerMove pos game =
               else
                 always {game | pushAttempt = Just playerDir}
         else if Thing.isExit ahead && game.collected >= game.toCollect then
-          always init
+          always {game | finished = True}
         else
           identity
     Thing.Handed rot ->
