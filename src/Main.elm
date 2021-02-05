@@ -45,6 +45,7 @@ setKeyState pressed key keyState =
     Key.Down -> {keyState | down = pressed}
     Key.Left -> {keyState | left = pressed}
     Key.Fire -> {keyState | fire = pressed}
+    Key.Restart -> keyState
 
 defaultLevel =
   """
@@ -167,21 +168,24 @@ playerMove keyState =
   else
     PlayerMove.Stand
 
+restart : Model -> Model
+restart model = {model | game = Game.fromLevel model.level}
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Tic ->
-      ( { model | game =
-            model.game
-            |> Game.update (playerMove model.keyState)
-            |> \game ->
-                 if game.finished then
-                   Game.fromLevel model.level
-                 else
-                   game
-        }
+      ( { model | game = Game.update (playerMove model.keyState) model.game}
+        |> \m ->
+          if m.game.finished then
+            restart model
+          else
+            m
         , Cmd.none)
-    KeyDown key -> ({model | keyState = setKeyState True key model.keyState}, Cmd.none)
+    KeyDown key ->
+      case key of
+        Key.Restart -> (restart model, Cmd.none)
+        _ -> ({model | keyState = setKeyState True key model.keyState}, Cmd.none)
     KeyUp key -> ({model | keyState = setKeyState False key model.keyState}, Cmd.none)
     NoOp -> (model, Cmd.none)
     VisibilityChange _ -> ({model | keyState = initKeyState}, Cmd.none)
@@ -194,6 +198,8 @@ decodeKey string =
     "ArrowDown" -> Just Key.Down
     "ArrowLeft" -> Just Key.Left
     "Shift" -> Just Key.Fire
+    "r" -> Just Key.Restart
+    "R" -> Just Key.Restart
     _ -> Nothing
 
 subscriptions : Model -> Sub Msg

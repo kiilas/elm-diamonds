@@ -6,3 +6,4 @@ type Key
   | Down
   | Left
   | Fire
+  | Restart
