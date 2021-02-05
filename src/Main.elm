@@ -3,17 +3,19 @@ module Main exposing (..)
 import Array
 import Browser
 import Browser.Events
+import Browser.Navigation
 import Html
 import Html.Attributes
 import Json.Decode
-import Level
 import Time
+import Url
 
 import Cell
 import Dir
 import Explosion
 import Game
 import Key
+import Level
 import Map
 import PlayerMove
 import Thing
@@ -43,8 +45,15 @@ setKeyState pressed key keyState =
     Key.Left -> {keyState | left = pressed}
     Key.Fire -> {keyState | fire = pressed}
 
-init : () -> (Model, Cmd Msg)
-init = always <| ({game = Game.init, keyState = initKeyState}, Cmd.none)
+init : () -> Url.Url -> Browser.Navigation.Key -> (Model, Cmd Msg)
+init _ url _ =
+  (
+    { game =
+        case url.query of
+          Nothing -> Game.init
+          Just level -> Game.fromLevel <| Level.decode level,
+      keyState = initKeyState }
+  , Cmd.none )
 
 type Msg
   = Tic
@@ -113,8 +122,11 @@ gameView game =
   <| List.indexedMap (rowView game.tic)
   <| Map.toList game.map
 
-view : Model -> Html.Html msg
-view = gameView << .game
+view : Model -> Browser.Document msg
+view model =
+  { title = "elm-diamonds"
+  , body = [gameView model.game]
+  }
 
 playerMove : KeyState -> PlayerMove.Move
 playerMove keyState =
@@ -169,9 +181,11 @@ subscriptions =
       , Browser.Events.onVisibilityChange VisibilityChange ]
 
 
-main = Browser.element
+main = Browser.application
     { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
+    , onUrlRequest = always NoOp
+    , onUrlChange = always NoOp
     }

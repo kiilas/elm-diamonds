@@ -1,4 +1,4 @@
-module Game exposing (Game, init, update)
+module Game exposing (Game, init, update, fromLevel)
 
 import Cell
 import Dir

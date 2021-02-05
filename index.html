@@ -7,6 +7,8 @@
 <script src="elm-diamonds.js"></script>
 </head>
 <body>
+    <div id="game"></div>
+    <script>var app = Elm.Main.init({node: document.getElementById('game')});</script>
     <div id="preload">
         <img src="gfx/boulder.png" />
         <img src="gfx/butterfly1.png" />
@@ -32,7 +34,5 @@
         <img src="gfx/steel.png" />
         <img src="gfx/wall.png" />
     </div>
-    <div id="game"></div>
-    <script>var app = Elm.Main.init({node: document.getElementById('game')});</script>
 </body>
 </html>
