@@ -13,12 +13,16 @@ import Array
 type alias Game =
   { map : Map.Map
   , tic : Int
+  , collected : Int
+  , toCollect : Int
   }
 
 init : Game
 init =
   { map = Map.fromList Map.exampleMap
   , tic = 0
+  , collected = 0
+  , toCollect = 9
   }
 
 update : PlayerMove.Move -> Game -> Game
@@ -48,10 +52,12 @@ updateCell playerMove pos game =
       let
         ahead = Map.at game.map (Dir.add (PlayerMove.dir playerMove) pos)
       in
-      if Thing.passable ahead
-        then move (PlayerMove.dir playerMove) pos game
-      else
-        game
+      if Thing.passable ahead then
+        collect ahead game
+        |> move (PlayerMove.dir playerMove) pos
+      else if Thing.isExit ahead && game.collected >= game.toCollect then
+        init
+      else game
     Thing.Handed rot ->
       let
         ahead = Map.at game.map (Dir.add (Thing.dir thing) pos)
@@ -127,3 +133,9 @@ explode explosion (x, y) game =
         thing
   in
   List.foldl (change explosionChange) game explosionCoords
+
+collect : Thing.Thing -> Game -> Game
+collect thing game =
+  case thing of
+    Thing.Diamond _ -> {game | collected = game.collected + 1}
+    _ -> game
