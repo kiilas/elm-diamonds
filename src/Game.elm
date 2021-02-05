@@ -50,11 +50,16 @@ updateCell playerMove pos game =
     Thing.NoMove -> game
     Thing.PlayerMove ->
       let
-        ahead = Map.at game.map (Dir.add (PlayerMove.dir playerMove) pos)
+        aheadPos = Dir.add (PlayerMove.dir playerMove) pos
+        ahead = Map.at game.map aheadPos
       in
       if Thing.passable ahead then
         collect ahead game
-        |> move (PlayerMove.dir playerMove) pos
+        |>
+          case playerMove of
+            PlayerMove.Stand -> identity
+            PlayerMove.Walk d -> move d pos
+            PlayerMove.Grab d -> change (always Thing.Space) aheadPos
       else if Thing.isExit ahead && game.collected >= game.toCollect then
         init
       else game

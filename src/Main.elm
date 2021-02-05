@@ -27,10 +27,11 @@ type alias KeyState =
   , right : Bool
   , down : Bool
   , left : Bool
+  , fire : Bool
   }
 
 initKeyState : KeyState
-initKeyState = KeyState False False False False
+initKeyState = KeyState False False False False False
 
 setKeyState : Bool -> Key.Key -> KeyState -> KeyState
 setKeyState pressed key keyState =
@@ -39,6 +40,7 @@ setKeyState pressed key keyState =
     Key.Right -> {keyState | right = pressed}
     Key.Down -> {keyState | down = pressed}
     Key.Left -> {keyState | left = pressed}
+    Key.Fire -> {keyState | fire = pressed}
 
 init : () -> (Model, Cmd Msg)
 init = always <| ({game = Game.init, keyState = initKeyState}, Cmd.none)
@@ -115,14 +117,21 @@ view = gameView << .game
 
 playerMove : KeyState -> PlayerMove.Move
 playerMove keyState =
+  let
+    action =
+      if keyState.fire then
+        PlayerMove.Grab
+      else
+        PlayerMove.Walk
+  in
   if keyState.right
-    then PlayerMove.Walk Dir.Right
+    then action Dir.Right
   else if keyState.left
-    then PlayerMove.Walk Dir.Left
+    then action Dir.Left
   else if keyState.up
-    then PlayerMove.Walk Dir.Up
+    then action Dir.Up
   else if keyState.down
-    then PlayerMove.Walk Dir.Down
+    then action Dir.Down
   else
     PlayerMove.Stand
 
@@ -142,6 +151,7 @@ decodeKey string =
     "ArrowRight" -> Just Key.Right
     "ArrowDown" -> Just Key.Down
     "ArrowLeft" -> Just Key.Left
+    "Shift" -> Just Key.Fire
     _ -> Nothing
 
 subscriptions : Model -> Sub Msg

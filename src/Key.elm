@@ -5,3 +5,4 @@ type Key
   | Right
   | Down
   | Left
+  | Fire
